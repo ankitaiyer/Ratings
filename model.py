@@ -32,7 +32,7 @@ class Ratings(Base):
     movie_id = Column(Integer)
     user_id = Column(Integer)
     rating = Column(Integer)
-    timestamp = Column(Integer, nullable=True)
+#    timestamp = Column(Integer, nullable=True)
 
 
 
