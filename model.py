@@ -2,6 +2,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
 
 ENGINE = None
 Session = None
@@ -30,8 +32,11 @@ class Ratings(Base):
     __tablename__ = "ratings"
     id = Column(Integer, primary_key=True)
     movie_id = Column(Integer)
-    user_id = Column(Integer)
+    user_id = Column(Integer, ForeignKey('users.id'))
     rating = Column(Integer)
+
+    user = relationship("User", 
+            backref=backref("ratings", order_by=id))
 #    timestamp = Column(Integer, nullable=True)
 
 ### End class declarations
@@ -50,8 +55,9 @@ def connect():
 def main():
     # """In case we need this for something"""
     # pass
-    session = connect()
 
-if __name__ == "__main__":
-    main()
 
+    if __name__ == "__main__":
+        main()
+
+session = connect()
