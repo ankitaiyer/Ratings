@@ -49,9 +49,23 @@ class Ratings(Base):
 
 ### End class declarations
 
+def authenticate(emailform, passwordform):
+    user = session.query(User).filter_by(email=emailform).first()
+    if int(user.password) == int(passwordform):
+        return user.email
+    else:
+        return "Auth failed"
+
+def register_user(emailform, passwordform, ageform, zipcodeform):
+    print emailform
+    temp_user = User(email=emailform, password=hash(passwordform), age=ageform, zipcode=zipcodeform)
+    print temp_user.email
+    session.add(temp_user)
+    session.commit()
 
 def main():
 
 
     if __name__ == "__main__":
         main()
+

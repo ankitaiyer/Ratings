@@ -1,5 +1,8 @@
 <html>
+<body>
+<!--- TODO: print something really simple here and see if it renders -->
 {% for user in user_list %}
-<h2>User {{ user.id }}, age {{ user.age }} has {{ user.ratings }} ratings</h2>
+<h2>User {{ user.id }}, age {{ user.age }} has {{ user.ratings|length }} ratings</h2>
 {% endfor %}
+</body>
 </html>
