@@ -34,8 +34,6 @@ class Ratings(Base):
     rating = Column(Integer)
 #    timestamp = Column(Integer, nullable=True)
 
-
-
 ### End class declarations
 
 def connect():
@@ -50,8 +48,9 @@ def connect():
 
 
 def main():
-    """In case we need this for something"""
-    pass
+    # """In case we need this for something"""
+    # pass
+    session = connect()
 
 if __name__ == "__main__":
     main()
