@@ -4,11 +4,16 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import sessionmaker, scoped_session
 
-ENGINE = None
-Session = None
+ENGINE = create_engine("sqlite:///ratings.db", echo=False)
+session = scoped_session(sessionmaker(bind=ENGINE, autocommit = False, autoflush = False))
+
+#ENGINE = None
+#Session = None
 
 Base = declarative_base()
+Base.query = session.query_property()
 
 ### Class declarations go here
 class User(Base):
@@ -44,23 +49,9 @@ class Ratings(Base):
 
 ### End class declarations
 
-def connect():
-    global ENGINE
-    global Session
-
-    ENGINE = create_engine("sqlite:///ratings.db", echo=True)
-    Session = sessionmaker(bind=ENGINE)
-
-    return Session()
-# any time you need a session later, you can just do 'session = Session()'
-
 
 def main():
-    # """In case we need this for something"""
-    # pass
 
 
     if __name__ == "__main__":
         main()
-
-session = connect()
