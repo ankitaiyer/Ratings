@@ -72,8 +72,11 @@ def getUserMovieRatings(userid):
     for r in ratings:
         movie = session.query(Movies).get(r.movie_id)
         movies.append(movie)
-        movie_ratings.append((movie.name, r.rating))
+        movie_ratings.append((movie.name, r.rating, movie.id))
     return movie_ratings
+
+
+
 
 
 

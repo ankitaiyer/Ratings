@@ -12,7 +12,7 @@
 <!--- TODO: print something really simple here and see if it renders -->
 <h2>Movie ratings for User {{ userid }}</h2>
 {% for rating in movie_ratings %}
-<p class="{{ loop.cycle('odd', 'even') }}">Movie: <strong><em>{{ rating[0] }}</em></strong>        <tab><tab><tab>Rating: <strong>{{ rating[1] }}</strong></p>
+<p class="{{ loop.cycle('odd', 'even') }}">Movie: <a href="/movies/{{ rating[2] }}"><strong><em>{{ rating[0] }}</em></strong></a>  |||  Rating: <strong>{{ rating[1] }}</strong></p>
 {% endfor %}
 </body>
 </html>
