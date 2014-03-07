@@ -63,6 +63,20 @@ def register_user(emailform, passwordform, ageform, zipcodeform):
     session.add(temp_user)
     session.commit()
 
+def getUserMovieRatings(userid):
+    u = session.query(User).get(userid)
+    ratings = session.query(Ratings).filter_by(user_id=u.id).all()
+    #movies = session.query(Movies).filter_by(movie_id=ratings.movie_id)
+    movies = []
+    movie_ratings = []
+    for r in ratings:
+        movie = session.query(Movies).get(r.movie_id)
+        movies.append(movie)
+        movie_ratings.append((movie.name, r.rating))
+    return movie_ratings
+
+
+
 def main():
 
 

@@ -47,11 +47,15 @@ def session_clear():
     session.clear()
     return redirect(url_for("index"))
 
-
-@app.route("/users")
+@app.route("/user_list")
 def list_users():
     user_list = model.session.query(model.User).all()
     return render_template("user_list.html", user_list=user_list)
+
+@app.route("/users/<userid>")
+def user_details(userid):
+    movie_ratings = model.getUserMovieRatings(userid)
+    return render_template("user_profile.html", userid=userid, movie_ratings=movie_ratings)
 
 if __name__ == "__main__":
     app.run(debug = True)
