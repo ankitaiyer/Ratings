@@ -86,14 +86,14 @@ def getRatingsForMovie(movieid):
         user_ratings.append((r.user_id, r.rating, m.name, user.zipcode))
     return user_ratings
 
-def addEditRating(userid, movieid,rating):
-    print rating
+def addEditRating(userid,movieid,rating):
+#    print rating
     try:
         current_rating = session.query(Ratings).filter_by(movie_id=movieid, user_id=userid).one()
         current_rating.rating = rating
         session.commit()
     except NoResultFound:
-        print "RATING", rating
+#        print "RATING", rating
         temp_rating = Ratings(user_id=userid, movie_id=movieid, rating=rating)
         session.add(temp_rating)
         session.commit()

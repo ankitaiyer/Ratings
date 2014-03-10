@@ -76,10 +76,7 @@ def movie_details_rate(movieid):
     userid = model.getUserID(author_id)
     rating = request.form.get("rating")
     model.addEditRating(userid, movieid,rating)
-#    return redirect("/movies/<movieid>")
-#    return redirect(url_for("movie_details"), movieid=movieid)
-#    return render_template("movie_profile.html", movieid=movieid)
-    return redirect(url_for("main_menu"))
+    return redirect(url_for("movie_details", movieid=movieid))
 
 if __name__ == "__main__":
     app.run(debug = True)
