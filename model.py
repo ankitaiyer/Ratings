@@ -1,13 +1,14 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm.exc import NoResultFound
 
 ENGINE = create_engine("sqlite:///ratings.db", echo=False)
 session = scoped_session(sessionmaker(bind=ENGINE, autocommit = False, autoflush = False))
+#NoResultFound = None
 
 #ENGINE = None
 #Session = None
@@ -75,10 +76,31 @@ def getUserMovieRatings(userid):
         movie_ratings.append((movie.name, r.rating, movie.id))
     return movie_ratings
 
+def getRatingsForMovie(movieid):
+    m = session.query(Movies).get(movieid)
+    ratings = session.query(Ratings).filter_by(movie_id=m.id).all()
+    user_ratings = []
+    for r in ratings:
+        user = session.query(User).get(r.movie_id)
+       # users.append(user)
+        user_ratings.append((r.user_id, r.rating, m.name, user.zipcode))
+    return user_ratings
 
+def addEditRating(userid, movieid,rating):
+    print rating
+    try:
+        current_rating = session.query(Ratings).filter_by(movie_id=movieid, user_id=userid).one()
+        current_rating.rating = rating
+        session.commit()
+    except NoResultFound:
+        print "RATING", rating
+        temp_rating = Ratings(user_id=userid, movie_id=movieid, rating=rating)
+        session.add(temp_rating)
+        session.commit()
 
-
-
+def getUserID(email):
+    user = session.query(User).filter_by(email="c.com").one()
+    return user.id
 
 def main():
 

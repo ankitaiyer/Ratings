@@ -52,10 +52,34 @@ def list_users():
     user_list = model.session.query(model.User).all()
     return render_template("user_list.html", user_list=user_list)
 
+@app.route("/movie_list")
+def list_movies():
+    movie_list = model.session.query(model.Movies).all()
+    return render_template("movie_list.html", movie_list=movie_list)
+
+
 @app.route("/users/<userid>")
 def user_details(userid):
     movie_ratings = model.getUserMovieRatings(userid)
     return render_template("user_profile.html", userid=userid, movie_ratings=movie_ratings)
+
+@app.route("/movies/<movieid>")
+def movie_details(movieid):
+    author_id = session.get("email")
+    print author_id
+    movie_ratings = model.getRatingsForMovie(movieid)
+    return render_template("movie_profile.html", movieid=movieid, movie_ratings=movie_ratings, author_id=author_id)  
+
+@app.route("/movies/<movieid>", methods=['POST'])
+def movie_details_rate(movieid):
+    author_id = session.get("email")
+    userid = model.getUserID(author_id)
+    rating = request.form.get("rating")
+    model.addEditRating(userid, movieid,rating)
+#    return redirect("/movies/<movieid>")
+#    return redirect(url_for("movie_details"), movieid=movieid)
+#    return render_template("movie_profile.html", movieid=movieid)
+    return redirect(url_for("main_menu"))
 
 if __name__ == "__main__":
     app.run(debug = True)
