@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.orm.exc import NoResultFound
+import correlation
 
 ENGINE = create_engine("sqlite:///ratings.db", echo=False)
 session = scoped_session(sessionmaker(bind=ENGINE, autocommit = False, autoflush = False))
@@ -24,6 +25,35 @@ class User(Base):
     password = Column(String(64), nullable=True)
     age = Column(Integer, nullable=True)
     zipcode = Column(String(15), nullable=True)
+
+    def similarity(self, other):
+        u_ratings = {}
+        paired_ratings = []
+        for r in self.ratings:
+            u_ratings[r.movie_id] = r
+
+        for r in other.ratings:
+            u_r = u_ratings.get(r.movie_id)
+            if u_r:
+                paired_ratings.append( (u_r.rating, r.rating) )
+
+        if paired_ratings:
+            return correlation.pearson(paired_ratings)
+        else:
+            return 0.0
+
+    def predict_rating(self, movie):
+        ratings = self.ratings
+        other_ratings = movie.ratings
+        similarities = [ (self.similarity(r.user), r) \
+                for r in other_ratings ]
+        similarities.sort(reverse = True)
+#        top_user = similarities[0]
+#        return top_user[1].rating * top_user[0]
+        print similarities 
+        numerator = sum([ r.rating * similarity for similarity, r in similarities ])
+        denominator = sum([ similarity[0] for similarity in similarities ])
+        return numerator/denominator
 
 
 class Movies(Base):
@@ -87,16 +117,24 @@ def getRatingsForMovie(movieid):
     return user_ratings
 
 def addEditRating(userid,movieid,rating):
-#    print rating
+#   check to see if a rating exists for this user and movie
+    current_rating = session.query(Ratings).filter_by(movie_id=movieid, user_id=userid).first()
+#   if we don't find a rating for this user and movie, add the user/movie to the table
+    if not current_rating:
+        current_rating = Ratings(user_id=userid, movie_id=movieid)
+#   whether or not the record previously existed, add/update the rating for the user/movie
+#   this saves us from recycling a lot of code
+    current_rating.rating = rating
+
     try:
-        current_rating = session.query(Ratings).filter_by(movie_id=movieid, user_id=userid).one()
-        current_rating.rating = rating
+        session.add(current_rating)
         session.commit()
-    except NoResultFound:
+    except:
+        print "OOps, database gave an error"
 #        print "RATING", rating
-        temp_rating = Ratings(user_id=userid, movie_id=movieid, rating=rating)
-        session.add(temp_rating)
-        session.commit()
+        return None
+    
+    return current_rating
 
 def getUserID(email):
     user = session.query(User).filter_by(email="c.com").one()
