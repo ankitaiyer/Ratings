@@ -48,6 +48,9 @@ class User(Base):
         similarities = [ (self.similarity(r.user), r) \
                 for r in other_ratings ]
         similarities.sort(reverse = True)
+        similarities = [ sim for sim in similarities if sim[0] > 0 ]
+        if not similarities:
+            return None
 #        top_user = similarities[0]
 #        return top_user[1].rating * top_user[0]
         print similarities 
